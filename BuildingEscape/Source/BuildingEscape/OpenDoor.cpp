@@ -2,7 +2,8 @@
 
 
 #include "OpenDoor.h"
-
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include <string>
 
 // Sets default values for this component's properties
@@ -22,8 +23,14 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
-	TargetYaw = InitialYaw + 90.f;
-	
+	OpenAngle += InitialYaw;
+
+	if(!PressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s has no pressure plate assigned!"), *GetOwner()->GetName());
+	}
+
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -31,13 +38,28 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	UE_LOG(LogTemp, Warning, TEXT("Yaw = %f"), GetOwner()->GetActorRotation().Yaw)
-	
-	CurrentYaw = GetOwner()->GetActorRotation().Yaw;
-	FRotator DoorRotation = GetOwner()->GetActorRotation();
-	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime,OpeningSpeed);
-	GetOwner()->SetActorRotation(DoorRotation);
-	
+	if(PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
+	{
+		OpenDoor(DeltaTime);
+	}
+	else
+	{
+		CloseDoor(DeltaTime);
+	}
 }
 
+void UOpenDoor::OpenDoor(float DeltaTime)
+{
+	CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+	FRotator DoorRotation = GetOwner()->GetActorRotation();
+	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, OpeningSpeed);
+	GetOwner()->SetActorRotation(DoorRotation);
+}
+
+void UOpenDoor::CloseDoor(float DeltaTime)
+{
+	CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+	FRotator DoorRotation = GetOwner()->GetActorRotation();
+	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw, InitialYaw, DeltaTime, OpeningSpeed);
+	GetOwner()->SetActorRotation(DoorRotation);
+}

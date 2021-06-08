@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
 
@@ -19,14 +20,24 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void CloseDoor(float DeltaTime);
+	void OpenDoor(float DeltaTime);
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+
 	float InitialYaw;
 	float CurrentYaw;
-	float TargetYaw;
+	UPROPERTY(EditAnywhere)
+	float OpenAngle = 90.f;
 	float OpeningSpeed = 2.f;
+
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume* PressurePlate;
+
+	UPROPERTY(EditAnywhere)
+		AActor* ActorThatOpens;
 };
