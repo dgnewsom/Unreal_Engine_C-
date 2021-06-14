@@ -16,8 +16,8 @@ class BUILDINGESCAPE_API UGrabber : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UGrabber();
-	void FindInputComponent();
 	void FindPhysicsHandle();
+	void FindInputComponent();
 
 protected:
 	// Called when the game starts
@@ -31,7 +31,9 @@ private:
 	float Reach = 100.f;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* Input = nullptr;
-	FHitResult GetFirstPhysicsBodyInReach();
 	void Grab();
 	void Release();
+	FHitResult GetFirstPhysicsBodyInReach() const;
+	FVector GetPlayerWorldPosition() const;
+	FVector GetPlayerGrab() const;
 };

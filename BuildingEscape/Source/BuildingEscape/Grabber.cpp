@@ -32,29 +32,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if(PhysicsHandle->GrabbedComponent)
 	{
-		// Get players viewpoint
-	OUT FVector PlayerViewpointLocation;
-	OUT FRotator PlayerViewpointRotation;
-	
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		PlayerViewpointLocation,
-		PlayerViewpointRotation
-	);
-	
-	// Draw line showing the reach
-	FVector LineTraceEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(GetPlayerGrab());
 	}
 }
 
 void UGrabber::FindPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if(PhysicsHandle)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("Physics handle found on %s"), *GetOwner()->GetName())
-	}
-	else
+	if(PhysicsHandle == nullptr)
 	{
 		UE_LOG(LogTemp,Error,TEXT("No physics handle found on %s"), *GetOwner()->GetName())
 	}
@@ -65,7 +50,6 @@ void UGrabber::FindInputComponent()
 	Input = GetOwner()->FindComponentByClass<UInputComponent>();
 	if(Input)
 	{
-		//UE_LOG(LogTemp,Warning,TEXT("Input component found on %s"), *GetOwner()->GetName())
 		Input->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		Input->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
@@ -77,62 +61,33 @@ void UGrabber::FindInputComponent()
 
 void UGrabber::Grab()
 {
-	// Get players viewpoint
-	OUT FVector PlayerViewpointLocation;
-	OUT FRotator PlayerViewpointRotation;
-	
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		PlayerViewpointLocation,
-		PlayerViewpointRotation
-	);
-	
-	// Draw line showing the reach
-	FVector LineTraceEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
-	
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
 	if(HitResult.GetActor())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Grabbed %s"), *HitResult.GetActor()->GetName());
-		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,LineTraceEnd);
-	}
-	else
-	{
-		UE_LOG(LogTemp,Warning,TEXT("Grabber Pressed"));
+		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,GetPlayerGrab());
 	}
 }
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Grabber Released"));
 	if(PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();
 	}
 }
 
-FHitResult UGrabber::GetFirstPhysicsBodyInReach()
+FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
-	// Get players viewpoint
-	OUT FVector PlayerViewpointLocation;
-	OUT FRotator PlayerViewpointRotation;
-	
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		PlayerViewpointLocation,
-		PlayerViewpointRotation
-	);
-	
-	// Draw line showing the reach
-	FVector LineTraceEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
-		
 	// Ray-Cast out to a distance (Reach)
 	OUT FHitResult Hit;
 	FCollisionQueryParams TraceParams(FName(TEXT("")),false,GetOwner());
 	GetWorld()->LineTraceSingleByObjectType
 	(
 		Hit,
-		PlayerViewpointLocation,
-		LineTraceEnd,
+		GetPlayerWorldPosition(),
+		GetPlayerGrab(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams
 	);
@@ -140,5 +95,30 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	return Hit;
 }
 
+FVector UGrabber::GetPlayerWorldPosition() const
+{
+	OUT FVector PlayerViewpointLocation;
+	OUT FRotator PlayerViewpointRotation;
+	
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerViewpointLocation,
+		PlayerViewpointRotation
+	);
 
+	return PlayerViewpointLocation;
+}
 
+FVector UGrabber::GetPlayerGrab() const 
+{
+	// Get players viewpoint
+	OUT FVector PlayerViewpointLocation;
+	OUT FRotator PlayerViewpointRotation;
+	
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerViewpointLocation,
+		PlayerViewpointRotation
+	);
+	
+	// Draw line showing the reach
+	return PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
+}

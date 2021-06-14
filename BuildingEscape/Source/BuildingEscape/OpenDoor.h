@@ -22,12 +22,15 @@ protected:
 	virtual void BeginPlay() override;
 	void CloseDoor(float DeltaTime);
 	void OpenDoor(float DeltaTime);
+	float TotalMassOfActors() const;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	UPROPERTY(EditAnywhere)
+	float WeightToOpenDoor = 50.f;
 
 	UPROPERTY(EditAnywhere)
 	float OpenSpeed = 2.f;
@@ -50,6 +53,4 @@ private:
 	float InitialYaw;
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
-	
-	
 };
