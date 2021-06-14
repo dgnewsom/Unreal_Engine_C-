@@ -39,7 +39,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::FindPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if(PhysicsHandle == nullptr)
+	if(!PhysicsHandle)
 	{
 		UE_LOG(LogTemp,Error,TEXT("No physics handle found on %s"), *GetOwner()->GetName())
 	}
@@ -63,15 +63,23 @@ void UGrabber::Grab()
 {
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
-	if(HitResult.GetActor())
+	AActor* ActorHit = HitResult.GetActor();
+	
+	if(ActorHit)
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Grabbed %s"), *HitResult.GetActor()->GetName());
-		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,GetPlayerGrab());
+		if(!PhysicsHandle){return;}
+		PhysicsHandle->GrabComponentAtLocation
+			(
+				ComponentToGrab,
+				NAME_None,
+				GetPlayerGrab()
+			);
 	}
 }
 
 void UGrabber::Release()
 {
+	if(!PhysicsHandle){return;}
 	if(PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();
@@ -91,7 +99,7 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams
 	);
-
+	
 	return Hit;
 }
 

@@ -16,6 +16,8 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
+	void FindPressurePLate();
+	void FindAudioComponent();
 
 protected:
 	// Called when the game starts
@@ -45,12 +47,14 @@ private:
 	float OpenAngle = 90.f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* PressurePlate;
+	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpens;
-
+	UAudioComponent* DoorSound = nullptr;
+	
 	float InitialYaw;
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
+	bool OpenDoorSound = false;
+	bool CloseDoorSound = true;
 };
