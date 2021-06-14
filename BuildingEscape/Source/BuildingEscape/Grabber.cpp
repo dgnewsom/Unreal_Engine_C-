@@ -2,9 +2,9 @@
 
 
 #include "Grabber.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
-#include "DrawDebugHelpers.h"
 
 #define OUT
 
@@ -16,8 +16,6 @@ UGrabber::UGrabber()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
-
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
@@ -26,6 +24,27 @@ void UGrabber::BeginPlay()
 	//Check for physics handle
 	FindPhysicsHandle();
 	FindInputComponent();
+}
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if(PhysicsHandle->GrabbedComponent)
+	{
+		// Get players viewpoint
+	OUT FVector PlayerViewpointLocation;
+	OUT FRotator PlayerViewpointRotation;
+	
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerViewpointLocation,
+		PlayerViewpointRotation
+	);
+	
+	// Draw line showing the reach
+	FVector LineTraceEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 }
 
 void UGrabber::FindPhysicsHandle()
@@ -58,10 +77,24 @@ void UGrabber::FindInputComponent()
 
 void UGrabber::Grab()
 {
+	// Get players viewpoint
+	OUT FVector PlayerViewpointLocation;
+	OUT FRotator PlayerViewpointRotation;
+	
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerViewpointLocation,
+		PlayerViewpointRotation
+	);
+	
+	// Draw line showing the reach
+	FVector LineTraceEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
+	
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
+	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
 	if(HitResult.GetActor())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Grabbed %s"), *HitResult.GetActor()->GetName());
+		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab,NAME_None,LineTraceEnd);
 	}
 	else
 	{
@@ -72,6 +105,10 @@ void UGrabber::Grab()
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Grabber Released"));
+	if(PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach()
@@ -103,10 +140,5 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	return Hit;
 }
 
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
 
 
