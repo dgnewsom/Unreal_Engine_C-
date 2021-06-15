@@ -38,7 +38,6 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp,
 							FVector NormalImpulse, 
 							const FHitResult& Hit)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Damage"));
 	AActor* MyOwner = GetOwner();
 	if(!MyOwner){return;}
 	if(OtherActor && OtherActor != this && OtherActor != MyOwner)

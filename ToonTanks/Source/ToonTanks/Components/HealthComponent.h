@@ -3,24 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
-UCLASS()
-class TOONTANKS_API AHealthComponent : public AActor
+class ATankGameModeBase;
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class TOONTANKS_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(EditAnywhere)
+	float DefaultHealth = 100.f;
+	float Health = 0.f;
+
+	ATankGameModeBase* GameModeRef;
 	
 public:	
-	// Sets default values for this actor's properties
-	AHealthComponent();
+	// Sets default values for this component's properties
+	UHealthComponent();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	UFUNCTION()
+	void TakeDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+		
 };
