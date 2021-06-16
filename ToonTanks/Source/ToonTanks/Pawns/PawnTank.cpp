@@ -81,4 +81,5 @@ void APawnTank::HandleDestruction()
 {
 	Super::HandleDestruction();
 	// Hide Player TODO
+	Destroy();
 }

@@ -21,14 +21,14 @@ AProjectileBase::AProjectileBase()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
 	InitialLifeSpan = 3.0f;
-	ProjectileMovement->InitialSpeed = MovementSpeed;
-	ProjectileMovement->MaxSpeed = MovementSpeed;
 }
 
 // Called when the game starts or when spawned
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
+	ProjectileMovement->InitialSpeed = MovementSpeed;
+	ProjectileMovement->MaxSpeed = MovementSpeed;
 	
 }
 
