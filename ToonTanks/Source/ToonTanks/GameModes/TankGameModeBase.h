@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "TankGameModeBase.generated.h"
 
+class APlayerControllerBase;
 class APawnTurret;
 class APawnTank;
 
@@ -18,10 +19,12 @@ private:
 
 	APawnTank* PlayerTank;
 	int32 TargetTurrets = 0;
-
+	APlayerControllerBase* PlayerControllerRef;
+	
 	void HandleGameStart();
 	void HandleGameOver(bool PlayerWon);
 	int32 GetTargetTurretCount();
+	
 	
 public:
 
