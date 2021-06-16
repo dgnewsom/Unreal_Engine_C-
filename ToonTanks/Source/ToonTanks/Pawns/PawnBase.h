@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "PawnBase.generated.h"
 
+class UHealthComponent;
 class AProjectileBase;
 class UCapsuleComponent;
 
@@ -24,10 +25,20 @@ private:
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* ProjectileSpawnPoint;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* HealthComponent;
+	
 	//VARIABLES
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectileBase> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	UParticleSystem* DeathParticles;
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	USoundBase* DeathSound;
 	
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	TSubclassOf<UMatineeCameraShake> ExplodeShake;
 
 public:
 	// Sets default values for this pawn's properties

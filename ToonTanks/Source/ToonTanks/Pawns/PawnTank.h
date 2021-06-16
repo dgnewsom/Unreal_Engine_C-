@@ -26,7 +26,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float MoveSpeed = 200.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float TurnSpeed = 200.f;
+	float TurnSpeed = 100.f;
+
+	bool bIsPlayerAlive = true;
 
 	APlayerController* PlayerControllerRef;
 	
@@ -46,6 +48,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void HandleDestruction() override;
+
+	bool GetIsPlayerAlive();
 	
 protected:
 	// Called when the game starts or when spawned
