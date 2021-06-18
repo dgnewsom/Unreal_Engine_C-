@@ -28,5 +28,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* GunRoot;
 	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* GunMesh;	
+	USkeletalMeshComponent* GunMesh;
+	UPROPERTY(EditAnywhere, Category = "Gun Stats")
+	float MaxRange = 1000.f;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UParticleSystem* MuzzleFlash;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UParticleSystem* HitEffect;
 };
