@@ -32,9 +32,11 @@ void AGun::PullTrigger()
 	OwnerController->GetPlayerViewPoint(PlayerViewLocation,PlayerViewRotation);
 
 	FVector End = PlayerViewLocation + PlayerViewRotation.Vector() * MaxRange;
-	//LineTrace TODO
 	FHitResult Hit;
-	bool bSuccessful = GetWorld()->LineTraceSingleByChannel(Hit,PlayerViewLocation,End,ECC_GameTraceChannel1);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+	bool bSuccessful = GetWorld()->LineTraceSingleByChannel(Hit,PlayerViewLocation,End,ECC_GameTraceChannel1,Params);
 	if(bSuccessful)
 	{
 		FVector ShotDirection = -PlayerViewRotation.Vector();

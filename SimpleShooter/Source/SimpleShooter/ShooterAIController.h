@@ -21,6 +21,10 @@ protected:
 	virtual void BeginPlay() override;
 private:
 	UPROPERTY(EditAnywhere)
-	float AcceptanceRadius = 300.f;
+	class UBehaviorTree* AIBehavior;
 	APawn* PlayerPawn;
+
+	
+	/*UPROPERTY(EditAnywhere)
+	float AcceptanceRadius = 300.f;*/
 };
