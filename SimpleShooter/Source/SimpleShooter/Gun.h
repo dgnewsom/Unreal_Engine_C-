@@ -37,4 +37,11 @@ private:
 	UParticleSystem* MuzzleFlash;
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	UParticleSystem* HitEffect;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	USoundBase* MuzzleSound;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	USoundBase* HitSound;
+
+	bool GunTrace(FHitResult &Hit, FVector &HitRotation);
+	AController* GetOwnerController() const;
 };

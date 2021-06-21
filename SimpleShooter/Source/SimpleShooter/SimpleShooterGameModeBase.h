@@ -13,5 +13,6 @@ UCLASS()
 class SIMPLESHOOTER_API ASimpleShooterGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	void virtual PawnKilled(APawn* PawnKilled);
 };
